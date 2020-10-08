@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+    <head>
+        <title>Online Grocery</title>
+        <meta charset="UTF-8" />
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <style>
+
+        .note{
+
+            color: #f4ffff;
+            font: "Lucida Sans Unicode";
+            box-shadow: #4CAF50;
+            font-style: italic;
+            border-color: #8c8c8c;
+            padding: 0%;
+            margin: 0%;
+        }
+        html{
+            background-color: #33C4FF;
+
+        }
+
+        form{
+
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 30%;
+            float: left;
+            margin-right: 0%;
+            padding-right: 0%;
+        }
+        cartTable{
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 70%;
+            float: left;
+            background-color: #8c8c8c;
+            padding-left: 0%;
+            margin-left: 0%;
+        }
+
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #dddddd;
+        }
+        input[type=text], select {
+            width: 40%;
+            padding: 5px 8px;
+            margin: 5px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+
+        }input[type=number], select {
+              width: 40%;
+              padding: 5px 8px;
+              margin: 5px 0;
+              display: inline-block;
+              border: 1px solid #ccc;
+              border-radius: 4px;
+              box-sizing: border-box;
+
+          }
+        input[type=date], select {
+            width: 40%;
+            padding: 5px 8px;
+            margin: 5px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+
+        }
+         p{
+             color: #d9edf7;
+             font-size: large;
+             padding-bottom: 0%;
+             margin-bottom: 0%;
+             margin-top: 1%;
+         }
+
+        input[type=submit] {
+            width: 20%;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 7px;
+            margin: 0px 0;
+            border: inherit;
+            border-radius: 4px;
+            cursor: pointer;
+            float: left;
+        }
+
+        input[type=submit]:hover {
+            background-color: #45a049;
+        }
+        
+
+        #tableAddres{
+
+            width: auto;
+        }
+    </style>
+        
+    </head>
+    <body>
+    	<br><br>
+    	<div align = "center" style="margin-right:300px; width:100%;">
+    		<h3><a th:href = "@{'/logout'}">Logout</a></h3>
+    		<h3><a th:href = "@{'/orderDetail/'+${userName}}">Click to check Orders</a></h3>
+    		<div th:if="${orderList != null && showOrderList}">
+				<div  th:each = "order : ${orderList}">
+					<a th:text="${order.orderNum}" th:href ="@{'/showOrder/'+${order.orderNum}}">Order </a>
+				</div>	
+	    	</div>
+    	</div>
+		<th:block>
+	    	<div>   		
+	    		<h2><a th:href = "@{'/products'}">click here to check product</a></h2>
+	    	</div>
+			<div th:if="${products != null && showProduct}">
+	    	    <table id="table" border="1" class="cartTable" style="width:500px">
+			    	<tr>
+				        <th>Product ID</th>
+				        <th>Product Name</th>
+				        <th>Price</th>
+				        <th>Quantity</th>
+			    	</tr>
+				    <tr th:each = "prod : ${products}">
+					    <form action="#" method="POST" th:action="@{/addToCart}" th:object="${cart}"> 
+							<!--<td><input type="checkbox" name="productList" th:value="${prod.code}">
+								 <label th:for="${#ids.prev('productList')}" th:text="${prod.code}"></label>  
+							</td> -->
+							<td width="20%" th:text="${prod.code}"></td>
+					        <td width="20%" th:text="${prod.name}"></td>
+					        <td width="20%" th:text="${prod.price}"></td>
+					        <td width="100%"><input type="number" th:field="*{quantity}" min="0" max="20"/></td>
+					        
+					        
+					        <input type="hidden" name ="productCode" th:value ="${prod.code}">
+					        <input type="hidden" name ="productName" th:value ="${prod.name}">
+					        <input type="hidden" name ="productPrice" th:value ="${prod.price}">
+
+					        <td width="100%"><button type="submit">Add to Cart</button></td>
+					     </form>
+				     </tr>
+    			</table>
+	    	</div>
+    	</th:block>
+    		
+    	<th:block th:if="${userCart != null && userCart != undefined}">
+	    	<div>
+	    		<h2>My cart </h2>	    		
+	    		<span>Order Number</span><a th:href = "@{'/cartDetail/'+${userCart.id}}" th:utext="${userCart.orderNum}"></a>
+	    	</div>
+    	</th:block>
+    	<th:block th:if="${userOrder != null}">
+	    	<div>
+	    		<h2>Click for Order Details </h2>	    		
+	    		<span>Order Number</span><a th:href = "@{'/showOrder/0'}" th:utext="${userOrder.orderNum}"></a>
+	    	</div>
+    	</th:block>
+    	<th:block th:if="${message != null}">
+	    	<div>
+	    		<h2>Error Message </h2>	    		
+	    		<td th:text="${message}"></td>
+	    	</div>
+    	</th:block>
+    	<th:block th:if="${showCart}">
+    		<h2>Cart Details</h2>
+    		<div><tr>
+    		<span><b>Order Number:</b></span>&nbsp;<td th:text="${userCart.orderNum}"></td>&nbsp;&nbsp;
+    		<span><b>Order Date:</b></span>&nbsp;<td th:text="${userCart.orderDate}"></td>
+    		</tr>
+    		<tr><span><b>Order Amount:</b></span>&nbsp;<td th:text="${userCart.amount}"></td></tr> 		
+    		</div>
+			<table id="table" border="1" class="cartTable" style="width:500px">
+   				<tr>
+			        <th>Product ID</th>
+			        <th>Product Name</th>
+			        <th>Amount</th>
+			        <th>Quantity</th>
+		    	</tr>
+			    <tr th:each = "cartLine : ${userCart.cartLines}">				    
+						<td th:text="${cartLine.productInfo.code}"></td>
+				        <td th:text="${cartLine.productInfo.name}"></td>
+				        <td th:text="${cartLine.productAmount}"></td>
+				        <td th:text="${cartLine.quanity}"></td>        
+			     </tr>
+			</table>
+			<br><br>
+			<div>
+			<form action="#" method="POST" th:action="@{/checkout}">
+				<button type="submit">Check Out</button>
+			</form> 
+			</div>  
+    	</th:block>
+    	
+    	<th:block th:if="${showOrder}">
+    		<h2>Order Details</h2>
+    		<div><tr>
+    		<span><b>Order Number:</b></span>&nbsp;<td th:text="${userOrder.orderNum}"></td>&nbsp;&nbsp;
+    		<span><b>Order Date:</b></span>&nbsp;<td th:text="${userOrder.orderDate}"></td>
+    		</tr>
+    		<tr><span><b>Order Amount:</b></span>&nbsp;<td th:text="${userOrder.amount}"></td></tr> 		
+    		</div>
+			<table id="table" border="1" class="cartTable" style="width:500px">
+   				<tr>
+			        <th>Product ID</th>
+			        <th>Product Name</th>
+			        <th>Amount</th>
+			        <th>Quantity</th>
+		    	</tr>
+			    <tr th:each = "cartLine : ${userOrder.cartLines}">				    
+						<td th:text="${cartLine.productInfo.code}"></td>
+				        <td th:text="${cartLine.productInfo.name}"></td>
+				        <td th:text="${cartLine.productAmount}"></td>
+				        <td th:text="${cartLine.quanity}"></td>        
+			     </tr>
+			</table>
+			<br><br> 
+    	</th:block>
+
+
+	
+     </body>
+</html>
